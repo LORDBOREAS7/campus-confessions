@@ -6,86 +6,292 @@
     <title>Campus Confessions</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #fff;
+            --bg-tertiary: #f7f7f7;
+            --text-primary: #0f1419;
+            --text-secondary: #536471;
+            --text-tertiary: #9aa3ad;
+            --border-color: #eff3f4;
+            --accent-color: #e0446d;
+            --accent-hover: #fde8ee;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #000000;
+            --bg-secondary: #16181c;
+            --bg-tertiary: #1c1f26;
+            --text-primary: #e7e9ea;
+            --text-secondary: #8b98a5;
+            --text-tertiary: #71767b;
+            --border-color: #2f3336;
+            --accent-color: #e0446d;
+            --accent-hover: #4a1426;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f5f5f5;
-            color: #0f1419;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+            margin: 0;
+            overflow-x: hidden;
         }
 
         /* ── Layout ─────────────────────────────────── */
         .timeline {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
+            width: 100%;
+            margin: 0;
+            background: var(--bg-secondary);
             min-height: 100vh;
-            border-left: 1px solid #eff3f4;
-            border-right: 1px solid #eff3f4;
+            border-left: none;
+            border-right: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(224,68,109,0.1), rgba(255,107,157,0.1));
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-shape:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: -5%;
+            animation-delay: 0s;
+        }
+
+        .bg-shape:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            top: 60%;
+            right: -5%;
+            animation-delay: 5s;
+            animation-duration: 25s;
+        }
+
+        .bg-shape:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 10s;
+            animation-duration: 30s;
+        }
+
+        .bg-shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 30%;
+            right: 30%;
+            animation-delay: 15s;
+            animation-duration: 22s;
+        }
+
+        .bg-shape:nth-child(5) {
+            width: 80px;
+            height: 80px;
+            bottom: 40%;
+            left: 60%;
+            animation-delay: 20s;
+            animation-duration: 18s;
         }
 
         /* ── Header ─────────────────────────────────── */
         .top-bar {
             position: sticky;
             top: 0;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
             z-index: 50;
-            border-bottom: 1px solid #eff3f4;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            animation: slideDown 0.5s ease;
+        }
+        [data-theme="dark"] .top-bar {
+            background: rgba(22,24,28,0.95);
         }
         .top-bar-inner {
-            padding: 12px 16px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
         }
         .top-bar h1 {
-            font-size: 1.25em;
-            font-weight: 700;
+            font-size: 1.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-color), #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease-in-out infinite;
         }
         .top-bar .subtitle {
-            font-size: 0.8em;
-            color: #536472;
-            font-weight: 400;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        /* Mouse Trail Animation */
+        @keyframes trailPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.5); opacity: 0.4; }
+        }
+
+        .mouse-trail {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, var(--accent-color), #ff6b9d);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 0 20px rgba(224,68,109,0.6);
+            animation: trailPulse 2s ease-in-out infinite;
+        }
+
+        .mouse-trail.active {
+            opacity: 0.8;
+        }
+
+        @keyframes trailPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.5); opacity: 0.4; }
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+        }
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-primary);
         }
 
         /* Tabs */
         .tabs {
             display: flex;
-            border-bottom: 1px solid #eff3f4;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+            background: var(--bg-secondary);
         }
         .tab {
             flex: 1;
             text-align: center;
-            padding: 14px 0;
-            font-size: 0.9em;
-            font-weight: 500;
-            color: #536471;
+            padding: 16px 24px;
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--text-secondary);
             cursor: pointer;
             position: relative;
-            transition: background 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             background: none;
             font-family: inherit;
+            border-radius: 12px 12px 0 0;
+            margin: 0 4px;
         }
-        .tab:hover { background: #f7f7f7; }
-        .tab.active { color: #0f1419; font-weight: 700; }
+        .tab:hover { 
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        .tab.active { 
+            color: var(--accent-color); 
+            font-weight: 700;
+            background: linear-gradient(135deg, rgba(224,68,109,0.1), rgba(255,107,157,0.1));
+            transform: translateY(-2px);
+        }
         .tab.active::after {
             content: '';
             position: absolute;
-            bottom: 0;
+            bottom: -2px;
             left: 50%;
             transform: translateX(-50%);
-            width: 56px;
-            height: 4px;
-            background: #e0446d;
+            width: 60%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-color), #ff6b9d);
             border-radius: 2px;
+            animation: slideIn 0.3s ease;
         }
 
         /* ── Compose ────────────────────────────────── */
         .compose {
-            padding: 12px 16px;
-            border-bottom: 1px solid #eff3f4;
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
-            gap: 12px;
+            gap: 16px;
+            background: linear-gradient(135deg, var(--bg-secondary), rgba(224,68,109,0.05));
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            animation: slideDown 0.6s ease;
+        }
+        .compose::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-color), #ff6b9d, var(--accent-color));
+            animation: shimmer 3s linear infinite;
+        }
+        .compose textarea {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 1.15em;
+            resize: none;
+            min-height: 52px;
+            color: var(--text-primary);
+            line-height: 1.4;
+            background: transparent;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease 0.2s both;
+        }
+        .compose textarea:focus {
+            transform: scale(1.02);
         }
         .avatar {
             width: 40px;
@@ -99,7 +305,7 @@
             font-weight: 700;
             color: #fff;
         }
-        .avatar.compose-avatar { background: #e0446d; }
+        .avatar.compose-avatar { background: var(--accent-color); }
 
         .compose-body { flex: 1; min-width: 0; }
         .compose textarea {
@@ -110,32 +316,59 @@
             font-size: 1.15em;
             resize: none;
             min-height: 52px;
-            color: #0f1419;
+            color: var(--text-primary);
             line-height: 1.4;
+            background: transparent;
         }
-        .compose textarea::placeholder { color: #9aa3ad; }
+        .compose textarea::placeholder { color: var(--text-tertiary); }
 
         .compose-moods {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
-            padding: 8px 0 4px;
+            padding: 12px 0 4px;
+            animation: fadeInUp 0.8s ease 0.4s both;
         }
         .mood-chip {
-            padding: 3px 10px;
-            border-radius: 14px;
-            border: 1px solid #e0e0e0;
+            padding: 4px 12px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
             font-size: 0.78em;
             cursor: pointer;
-            transition: all 0.15s;
-            background: #fff;
-            color: #536471;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            position: relative;
+            overflow: hidden;
         }
-        .mood-chip:hover { background: #f7f7f7; }
+        .mood-chip::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--accent-color);
+            opacity: 0.1;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+        .mood-chip:hover { 
+            background: var(--bg-tertiary);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .mood-chip:hover::before {
+            width: 100%;
+            height: 100%;
+        }
         .mood-chip.selected {
-            background: #fde8ee;
-            border-color: #e0446d;
-            color: #e0446d;
+            background: var(--accent-hover);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            transform: scale(1.1);
+            animation: popIn 0.3s ease;
         }
 
         .compose-footer {
@@ -143,9 +376,70 @@
             justify-content: space-between;
             align-items: center;
             padding-top: 10px;
-            border-top: 1px solid #eff3f4;
+            border-top: 1px solid var(--border-color);
         }
-        .compose-left { display: flex; align-items: center; gap: 12px; }
+        .compose-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
+
+        /* Image Upload Button */
+        .image-upload-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .image-upload-btn:hover {
+            background: var(--bg-tertiary);
+        }
+        .image-upload-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-secondary);
+        }
+
+        /* Image Preview */
+        .image-preview {
+            margin-top: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            max-width: 100%;
+        }
+        .image-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 300px;
+            object-fit: cover;
+        }
+        .image-preview .remove-image {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        .image-preview .remove-image:hover {
+            background: rgba(0,0,0,0.9);
+        }
 
         /* Circular char counter */
         .char-ring {
@@ -158,8 +452,8 @@
             fill: none;
             stroke-width: 2.5;
         }
-        .char-ring .bg { stroke: #eff3f4; }
-        .char-ring .fill { stroke: #e0446d; transition: stroke-dashoffset 0.2s, stroke 0.2s; }
+        .char-ring .bg { stroke: var(--border-color); }
+        .char-ring .fill { stroke: var(--accent-color); transition: stroke-dashoffset 0.2s, stroke 0.2s; }
         .char-ring .fill.warn { stroke: #ffc107; }
         .char-ring .fill.limit { stroke: #f44336; }
         .char-text {
@@ -168,35 +462,84 @@
             left: 50%;
             transform: translate(-50%,-50%);
             font-size: 0.55em;
-            color: #536471;
+            color: var(--text-secondary);
             font-weight: 600;
         }
 
         .post-btn {
-            padding: 8px 20px;
-            background: #e0446d;
+            padding: 10px 24px;
+            background: linear-gradient(135deg, var(--accent-color), #ff6b9d);
             color: #fff;
             border: none;
-            border-radius: 20px;
+            border-radius: 24px;
             font-weight: 700;
-            font-size: 0.88em;
+            font-size: 0.9em;
             cursor: pointer;
-            transition: opacity 0.15s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease 0.6s both;
         }
-        .post-btn:hover { opacity: 0.85; }
-        .post-btn:disabled { opacity: 0.5; cursor: default; }
+        .post-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+        .post-btn:hover { 
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(224,68,109,0.4);
+        }
+        .post-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        .post-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .post-btn:disabled { 
+            opacity: 0.5; 
+            cursor: default;
+            transform: none;
+        }
 
         /* ── Post Card ──────────────────────────────── */
         .post {
             display: flex;
-            gap: 12px;
-            padding: 12px 16px;
-            border-bottom: 1px solid #eff3f4;
-            transition: background 0.15s;
-            animation: fadeIn 0.3s ease;
+            gap: 16px;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.5s ease;
+            position: relative;
+            background: var(--bg-secondary);
         }
-        .post:hover { background: #f8f8f8; }
+        .post:hover { 
+            background: linear-gradient(135deg, var(--bg-tertiary), rgba(224,68,109,0.02));
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .post::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--accent-color), #ff6b9d);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .post:hover::before {
+            opacity: 1;
+        }
 
         .post-body { flex: 1; min-width: 0; }
 
@@ -211,15 +554,15 @@
             font-size: 0.92em;
         }
         .post-handle {
-            color: #536471;
+            color: var(--text-secondary);
             font-size: 0.85em;
         }
         .post-dot {
-            color: #536471;
+            color: var(--text-secondary);
             font-size: 0.7em;
         }
         .post-time {
-            color: #536471;
+            color: var(--text-secondary);
             font-size: 0.85em;
         }
 
@@ -245,6 +588,25 @@
             white-space: pre-wrap;
         }
 
+        /* Post Image */
+        .post-image {
+            margin-top: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .post-image:hover {
+            transform: scale(1.02);
+        }
+        .post-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
         /* Emoji reactions row (below text) */
         .post-reactions {
             display: flex;
@@ -256,8 +618,8 @@
             width: 32px;
             height: 28px;
             border-radius: 14px;
-            border: 1px solid #eff3f4;
-            background: #fff;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
             cursor: pointer;
             font-size: 0.85em;
             display: flex;
@@ -265,10 +627,10 @@
             justify-content: center;
             gap: 2px;
             transition: all 0.15s;
-            color: #536471;
+            color: var(--text-secondary);
         }
-        .emoji-btn:hover { background: #fde8ee; border-color: #e0446d; transform: scale(1.1); }
-        .emoji-btn.reacted { background: #fde8ee; border-color: #e0446d; }
+        .emoji-btn:hover { background: var(--accent-hover); border-color: var(--accent-color); transform: scale(1.1); }
+        .emoji-btn.reacted { background: var(--accent-hover); border-color: var(--accent-color); }
         .emoji-btn .e-count {
             font-size: 0.7em;
             font-weight: 600;
@@ -284,28 +646,148 @@
         .action {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 10px;
-            border-radius: 20px;
-            border: none;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 24px;
             background: none;
             cursor: pointer;
-            font-size: 0.82em;
-            color: #536471;
-            transition: all 0.15s;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
+            position: relative;
+            overflow: hidden;
         }
-        .action svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+        .action::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.1;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+        .action:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+        .action svg { 
+            width: 20px; 
+            height: 20px; 
+            fill: none; 
+            stroke: currentColor; 
+            stroke-width: 2; 
+            transition: transform 0.3s ease;
+        }
+        .action:hover svg { transform: scale(1.2); }
         .action:hover.reply-action { color: #1d9bf0; background: rgba(29,155,240,0.1); }
         .action:hover.repost-action { color: #00ba7c; background: rgba(0,186,124,0.1); }
         .action:hover.like-action { color: #f91880; background: rgba(249,24,128,0.1); }
         .action:hover.bookmark-action { color: #1d9bf0; background: rgba(29,155,240,0.1); }
-        .action.liked { color: #f91880; }
+        .action:hover.report-action { color: #e0245e; background: rgba(224,36,94,0.1); }
+        .action.liked { 
+            color: #f91880; 
+            animation: pulse 0.3s ease;
+        }
         .action.liked svg { fill: #f91880; stroke: #f91880; }
         .action.reposted { color: #00ba7c; }
         .action.bookmarked { color: #1d9bf0; }
         .action.bookmarked svg { fill: #1d9bf0; }
-        .action span { font-size: 0.95em; }
+        .action span { font-size: 0.95em; font-weight: 600; }
+
+        /* Report Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 4px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        .modal-close:hover {
+            background: var(--bg-tertiary);
+        }
+        .report-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .report-option {
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            color: var(--text-primary);
+            font-size: 0.9em;
+        }
+        .report-option:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-color);
+        }
+        .report-submit {
+            margin-top: 16px;
+            padding: 10px 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s;
+        }
+        .report-submit:hover {
+            opacity: 0.85;
+        }
+        .report-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
         /* ── Replies ────────────────────────────────── */
         .replies-section {
@@ -318,13 +800,13 @@
             display: flex;
             gap: 10px;
             padding: 10px 0 10px 52px;
-            border-top: 1px solid #eff3f4;
+            border-top: 1px solid var(--border-color);
         }
         .reply-avatar {
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: #536471;
+            background: var(--text-secondary);
             color: #fff;
             font-size: 0.65em;
             display: flex;
@@ -335,32 +817,33 @@
         }
         .reply-body { flex: 1; min-width: 0; }
         .reply-name { font-weight: 600; font-size: 0.82em; }
-        .reply-handle { color: #536471; font-size: 0.78em; }
+        .reply-handle { color: var(--text-secondary); font-size: 0.78em; }
         .reply-text { font-size: 0.88em; line-height: 1.45; margin-top: 2px; }
-        .reply-time { font-size: 0.72em; color: #536471; margin-top: 2px; }
+        .reply-time { font-size: 0.72em; color: var(--text-secondary); margin-top: 2px; }
 
         .reply-compose {
             display: flex;
             gap: 10px;
             padding: 10px 0 4px 52px;
-            border-top: 1px solid #eff3f4;
+            border-top: 1px solid var(--border-color);
             align-items: center;
         }
         .reply-compose input {
             flex: 1;
-            border: 1px solid #eff3f4;
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 8px 14px;
             font-size: 0.85em;
             outline: none;
             font-family: inherit;
-            color: #0f1419;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
         }
-        .reply-compose input:focus { border-color: #e0446d; }
-        .reply-compose input::placeholder { color: #9aa3ad; }
+        .reply-compose input:focus { border-color: var(--accent-color); }
+        .reply-compose input::placeholder { color: var(--text-tertiary); }
         .reply-compose button {
             padding: 6px 16px;
-            background: #e0446d;
+            background: var(--accent-color);
             color: #fff;
             border: none;
             border-radius: 20px;
@@ -374,12 +857,62 @@
         /* ── Empty State ────────────────────────────── */
         .empty {
             text-align: center;
-            padding: 80px 20px;
-            color: #9aa3ad;
+            padding: 120px 40px;
+            color: var(--text-tertiary);
+            animation: fadeInUp 0.8s ease;
         }
-        .empty .icon { font-size: 2.5em; margin-bottom: 10px; }
-        .empty p { font-size: 0.92em; }
-        .empty b { color: #0f1419; }
+        .empty .icon { 
+            font-size: 4em; 
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .empty p { 
+            font-size: 1.1em; 
+            margin-bottom: 10px;
+        }
+        .empty b { 
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), #ff6b9d);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(224,68,109,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 40;
+            animation: fadeInUp 0.8s ease 1s both, float 3s ease-in-out infinite;
+        }
+        .fab:hover {
+            transform: scale(1.15) rotate(180deg);
+            box-shadow: 0 8px 25px rgba(224,68,109,0.5);
+            animation: glow 2s ease-in-out infinite;
+        }
+        .fab:active {
+            transform: scale(1.05) rotate(180deg);
+        }
+        .fab svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+            transition: transform 0.3s ease;
+        }
+        .fab:hover svg {
+            transform: scale(1.2);
+        }
 
         /* ── Toast ──────────────────────────────────── */
         .toast {
@@ -387,7 +920,7 @@
             bottom: 24px;
             left: 50%;
             transform: translateX(-50%) translateY(80px);
-            background: #e0446d;
+            background: var(--accent-color);
             color: #fff;
             padding: 10px 22px;
             border-radius: 8px;
@@ -403,9 +936,82 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes underlineAnim {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(224,68,109,0.5); }
+            50% { box-shadow: 0 0 20px rgba(224,68,109,0.8), 0 0 30px rgba(224,68,109,0.4); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+
+<!-- Animated Background -->
+<div class="animated-bg">
+    <div class="bg-shape"></div>
+    <div class="bg-shape"></div>
+    <div class="bg-shape"></div>
+    <div class="bg-shape"></div>
+    <div class="bg-shape"></div>
+</div>
+
+<!-- Mouse Trail -->
+<div class="mouse-trail" id="mouseTrail"></div>
 
 <div class="timeline">
     <!-- Top Bar -->
@@ -413,6 +1019,14 @@
         <div class="top-bar-inner">
             <h1>Campus Confessions <span class="subtitle" id="count"></span></h1>
         </div>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" style="display: none;">
+                <path d="M12 17.5C9.5 17.5 7.5 15.5 7.5 13S9.5 8.5 12 8.5 16.5 10.5 16.5 13 14.5 17.5 12 17.5M12 7C8.7 7 6 9.7 6 13S8.7 19 12 19 18 16.3 18 13 15.3 7 12 7M12 2L14.4 6.4L19 5.7L16.2 9.8L18.6 14L14 12.7L9.4 14L11.8 9.8L9 5.7L13.6 6.4L12 2Z"/>
+            </svg>
+            <svg class="moon-icon" viewBox="0 0 24 24">
+                <path d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.64 6.35,17.66C9.37,20.67 14.19,20.78 17.33,17.97Z"/>
+            </svg>
+        </button>
         <div class="tabs">
             <button class="tab active" onclick="switchTab('recent', this)">For You</button>
             <button class="tab" onclick="switchTab('top', this)">Trending</button>
@@ -434,6 +1048,12 @@
             </div>
             <div class="compose-footer">
                 <div class="compose-left">
+                    <button class="image-upload-btn" onclick="document.getElementById('imageInput').click()" aria-label="Add image">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                    </button>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageSelect(event)">
                     <div class="char-ring" id="charRing">
                         <svg width="28" height="28" viewBox="0 0 28 28">
                             <circle class="bg" cx="14" cy="14" r="11" />
@@ -443,6 +1063,10 @@
                 </div>
                 <button class="post-btn" id="postBtn" onclick="createPost()" disabled>Post</button>
             </div>
+            <div id="imagePreview" class="image-preview" style="display: none;">
+                <img id="previewImg" src="" alt="Preview">
+                <button class="remove-image" onclick="removeImage()">×</button>
+            </div>
         </div>
     </div>
 
@@ -450,9 +1074,65 @@
     <div id="feed"></div>
 </div>
 
+<!-- Floating Action Button -->
+<button class="fab" onclick="scrollToTop()" aria-label="Scroll to top">
+    <svg viewBox="0 0 24 24">
+        <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+    </svg>
+</button>
+
 <div class="toast" id="toast"></div>
 
+<!-- Report Modal -->
+<div class="modal" id="reportModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Report Post</h2>
+            <button class="modal-close" onclick="closeReportModal()">×</button>
+        </div>
+        <div class="report-options">
+            <button class="report-option" onclick="selectReportReason(this, 'spam')">Spam or misleading content</button>
+            <button class="report-option" onclick="selectReportReason(this, 'inappropriate')">Inappropriate content</button>
+            <button class="report-option" onclick="selectReportReason(this, 'harassment')">Harassment or bullying</button>
+            <button class="report-option" onclick="selectReportReason(this, 'violence')">Violence or dangerous content</button>
+            <button class="report-option" onclick="selectReportReason(this, 'copyright')">Copyright violation</button>
+            <button class="report-option" onclick="selectReportReason(this, 'other')">Other</button>
+        </div>
+        <button class="report-submit" id="reportSubmitBtn" onclick="submitReport()" disabled>Submit Report</button>
+    </div>
+</div>
+
 <script>
+// ── Theme Switching ─────────────────────────────────
+const themeToggle = document.getElementById('theme-toggle');
+const sunIcon = document.querySelector('.sun-icon');
+const moonIcon = document.querySelector('.moon-icon');
+
+// Load saved theme or default to light
+const savedTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+updateThemeIcon(savedTheme);
+
+themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+});
+
+function updateThemeIcon(theme) {
+    if (theme === 'dark') {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+    } else {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+    }
+}
+
+// ── App Logic ───────────────────────────────────────
 const API = '/api/posts';
 const MAX = 280;
 const CIRCUMFERENCE = 2 * Math.PI * 11; // ~69.12
@@ -460,13 +1140,47 @@ const CIRCUMFERENCE = 2 * Math.PI * 11; // ~69.12
 const input = document.getElementById('input');
 const postBtn = document.getElementById('postBtn');
 const fillCircle = document.querySelector('.char-ring .fill');
+const imageInput = document.getElementById('imageInput');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
 
 let mood = 'none';
 let sort = 'recent';
+let selectedImage = null;
+let currentReportPostId = null;
+let selectedReportReason = null;
 const liked = new Set();
 const reposted = new Set();
 const bookmarked = new Set();
 const reacted = {}; // { postId: Set<type> }
+
+// ── Image Handling ────────────────────────────────
+function handleImageSelect(event) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            toast('Image size must be less than 5MB');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            selectedImage = e.target.result;
+            previewImg.src = selectedImage;
+            imagePreview.style.display = 'block';
+            updatePostButton();
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeImage() {
+    selectedImage = null;
+    previewImg.src = '';
+    imagePreview.style.display = 'none';
+    imageInput.value = '';
+    updatePostButton();
+}
 
 // ── Anonymous identity from post id ───────────────
 
@@ -513,12 +1227,22 @@ function pickMood(el) {
 
 // ── Character ring ────────────────────────────────
 
-input.addEventListener('input', () => {
+function updateCharCount() {
     const len = input.value.length;
     const pct = len / MAX;
     fillCircle.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
     fillCircle.className.baseVal = 'fill' + (pct > 0.9 ? (pct >= 1 ? ' limit' : ' warn') : '');
-    postBtn.disabled = len === 0 || len > MAX;
+    updatePostButton();
+}
+
+function updatePostButton() {
+    const hasContent = input.value.trim().length > 0 || selectedImage;
+    const validLength = input.value.length <= MAX;
+    postBtn.disabled = !hasContent || !validLength;
+}
+
+input.addEventListener('input', () => {
+    updateCharCount();
     // Auto-resize textarea
     input.style.height = 'auto';
     input.style.height = input.scrollHeight + 'px';
@@ -581,13 +1305,19 @@ async function loadPosts() {
         document.getElementById('count').textContent = posts.length ? `\u00b7 ${posts.length} posts` : '';
 
         if (!posts.length) {
-            feed.innerHTML = '<div class="empty"><div class="icon">&#128172;</div><p><b>No confessions yet.</b><br>Be the first to post.</p></div>';
+            feed.innerHTML = '<div class="empty"><div class="icon">💭</div><p><b>No confessions yet.</b><br>Be the first to share your thoughts!</p></div>';
             return;
         }
 
         feed.innerHTML = posts.map(p => {
             const moodHtml = p.mood && p.mood !== 'none' && MOOD_MAP[p.mood]
                 ? `<span class="post-mood ${MOOD_MAP[p.mood].cls}">${MOOD_MAP[p.mood].label}</span>` : '';
+
+            const imageHtml = p.image ? `
+                <div class="post-image" onclick="viewImage('${p.image}')">
+                    <img src="${p.image}" alt="Post image">
+                </div>
+            ` : '';
 
             const emojisHtml = EMOJIS.map(e => {
                 const c = (p.reactions && p.reactions[e.type]) || 0;
@@ -607,6 +1337,7 @@ async function loadPosts() {
                     </div>
                     ${moodHtml}
                     <div class="post-text">${esc(p.text)}</div>
+                    ${imageHtml}
                     <div class="post-reactions">${emojisHtml}</div>
                     <div class="actions">
                         <button class="action reply-action" onclick="toggleReplies(${p.id})">
@@ -620,6 +1351,9 @@ async function loadPosts() {
                         </button>
                         <button class="action bookmark-action ${bookmarked.has(p.id)?'bookmarked':''}" onclick="doBookmark(${p.id},this)">
                             ${ICON.bookmark}
+                        </button>
+                        <button class="action report-action" onclick="openReportModal(${p.id})">
+                            <svg viewBox="0 0 24 24"><path d="M13.5 8.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5.67-1.5 1.5-1.5 1.5.67 1.5 1.5zM12 16c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z" opacity=".4"/><path d="M12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10zm0-18c4.41 0 8 3.59 8 8s-3.59 8-8 8-8-3.59-8-8 3.59-8 8-8z"/></svg>
                         </button>
                     </div>
                     <div class="replies-section" id="replies-${p.id}">
@@ -641,26 +1375,63 @@ async function loadPosts() {
 
 async function createPost() {
     const text = input.value.trim();
-    if (!text) return;
-    postBtn.disabled = true;
+    if (!text && !selectedImage) return;
+    
     try {
-        await fetch(API, {
+        const postData = { text, mood };
+        if (selectedImage) {
+            postData.image = selectedImage;
+        }
+        
+        console.log('Posting data:', postData); // Debug log
+        
+        const res = await fetch(API, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text, mood })
+            body: JSON.stringify(postData)
         });
-        input.value = '';
-        input.style.height = 'auto';
-        fillCircle.style.strokeDashoffset = CIRCUMFERENCE;
-        fillCircle.className.baseVal = 'fill';
-        mood = 'none';
-        document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('selected'));
-        toast('Posted!');
-        loadPosts();
-    } catch (e) { toast('Failed to post'); }
+        
+        console.log('Response status:', res.status); // Debug log
+        
+        if (res.ok) {
+            const result = await res.json();
+            console.log('Post created:', result); // Debug log
+            
+            input.value = '';
+            updateCharCount();
+            mood = 'none';
+            document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('selected'));
+            removeImage();
+            await loadPosts();
+            toast('Confession posted!');
+            
+            // Add post animation
+            animateNewPost(result.id);
+        } else {
+            const errorText = await res.text();
+            console.error('Server error:', errorText);
+            toast('Failed to post: ' + errorText);
+        }
+    } catch (e) { 
+        console.error('Network error:', e);
+        toast('Failed to post: Network error'); 
+    }
 }
 
-// ── Like ──────────────────────────────────────────
+// ── Post Animation ────────────────────────────────
+function animateNewPost(postId) {
+    const postElement = document.getElementById(`post-${postId}`);
+    if (postElement) {
+        postElement.style.animation = 'none';
+        setTimeout(() => {
+            postElement.style.animation = 'slideInRight 0.6s ease, popIn 0.4s ease';
+            postElement.style.boxShadow = '0 0 20px rgba(224,68,109,0.3)';
+            setTimeout(() => {
+                postElement.style.boxShadow = '';
+            }, 1000);
+        }, 10);
+    }
+}
 
 async function doLike(id, btn) {
     if (liked.has(id)) return;
@@ -785,6 +1556,58 @@ async function sendReply(id) {
     } catch (e) { toast('Failed to reply'); }
 }
 
+// ── Report Functions ───────────────────────────────
+function openReportModal(postId) {
+    currentReportPostId = postId;
+    selectedReportReason = null;
+    document.getElementById('reportModal').classList.add('show');
+    document.querySelectorAll('.report-option').forEach(opt => opt.classList.remove('selected'));
+    document.getElementById('reportSubmitBtn').disabled = true;
+}
+
+function closeReportModal() {
+    document.getElementById('reportModal').classList.remove('show');
+    currentReportPostId = null;
+    selectedReportReason = null;
+}
+
+function selectReportReason(element, reason) {
+    document.querySelectorAll('.report-option').forEach(opt => opt.classList.remove('selected'));
+    element.classList.add('selected');
+    selectedReportReason = reason;
+    document.getElementById('reportSubmitBtn').disabled = false;
+}
+
+async function submitReport() {
+    if (!currentReportPostId || !selectedReportReason) return;
+    
+    try {
+        await fetch(`${API}/${currentReportPostId}/report`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason: selectedReportReason })
+        });
+        
+        toast('Report submitted successfully');
+        closeReportModal();
+    } catch (e) {
+        toast('Failed to submit report');
+    }
+}
+
+// ── Scroll to Top ───────────────────────────────
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// ── Image Viewer ───────────────────────────────────
+function viewImage(imageSrc) {
+    window.open(imageSrc, '_blank');
+}
+
 // ── Toast ─────────────────────────────────────────
 
 function toast(msg) {
@@ -795,6 +1618,91 @@ function toast(msg) {
 }
 
 // ── Init ──────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    // Trigger entrance animations
+    setTimeout(() => {
+        document.querySelector('.top-bar').style.animation = 'slideDown 0.6s ease';
+    }, 100);
+    
+    setTimeout(() => {
+        document.querySelector('.tabs').style.animation = 'fadeInUp 0.6s ease 0.2s both';
+    }, 200);
+    
+    // Add hover effects for interactive elements
+    addInteractiveAnimations();
+});
+
+function addInteractiveAnimations() {
+    // Add ripple effect to buttons
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255,255,255,0.5);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+            `;
+            
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+
+    // Mouse trailing effect
+    const mouseTrail = document.getElementById('mouseTrail');
+    let mouseX = 0, mouseY = 0;
+    let trailX = 0, trailY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        mouseTrail.classList.add('active');
+    });
+
+    document.addEventListener('mouseleave', () => {
+        mouseTrail.classList.remove('active');
+    });
+
+    // Smooth trailing animation
+    function updateTrail() {
+        trailX += (mouseX - trailX) * 0.1;
+        trailY += (mouseY - trailY) * 0.1;
+        
+        mouseTrail.style.left = trailX - 10 + 'px';
+        mouseTrail.style.top = trailY - 10 + 'px';
+        
+        requestAnimationFrame(updateTrail);
+    }
+    updateTrail();
+}
+
+// Add ripple animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
 loadPosts();
 </script>
 </body>
